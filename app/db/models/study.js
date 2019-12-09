@@ -33,11 +33,11 @@ const semester = {
 
 const schedule = {
   day: { type: Number, min: 1, max: maxDay },
-  allocatedCredit: { type: Number, min: 1, max: maxCredit },
-  allocatedMinute: { type: Number, min: minutePerCredit, max: maxMinute },
+  allocatedCredit: { type: Number, min: 1 },
+  allocatedMinute: { type: Number, min: minutePerCredit },
 };
 
-const studentRecordSchema = mongoose.Schema({
+const studySchema = mongoose.Schema({
   studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
   classroom: { type: Number, min: 1, max: maxClassroom },
   semester,
@@ -47,4 +47,4 @@ const studentRecordSchema = mongoose.Schema({
   subject: { type: String, enum: enumValues.subject },
 });
 
-module.exports = mongoose.model('StudentRecord', studentRecordSchema);
+module.exports = mongoose.model('Study', studySchema);
