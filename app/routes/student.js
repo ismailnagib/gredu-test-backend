@@ -1,11 +1,11 @@
 const joi = require('@hapi/joi');
-const Student = require('../db/models/student');
+const studentAction = require('../action/student.action');
 const normalizeError = require('../helpers/normalizeError');
-const { httpStatus } = require('../libs/constant');
+const { httpStatus, enumValues } = require('../libs/constant');
 
 const getAllStudent = async (req, res) => {
   try {
-    const data = await Student.find({});
+    const data = await studentAction.getStudent();
 
     return res.status(200).json({ data });
   } catch (err) {
@@ -17,7 +17,7 @@ const getAllStudent = async (req, res) => {
 
 const getOneStudent = async (req, res) => {
   try {
-    const data = await Student.findById(req.params.id);
+    const data = await studentAction.getStudentById(req.params.id);
 
     return res.status(httpStatus.success).json({ data });
   } catch (err) {
@@ -31,6 +31,7 @@ const createStudent = async (req, res) => {
   try {
     const validator = joi.object({
       name: joi.string().required(),
+      program: joi.string().valid(...enumValues.program).required(),
     });
 
     const { error } = validator.validate(req.body);
@@ -40,8 +41,9 @@ const createStudent = async (req, res) => {
       return res.status(httpStatus.badRequest).json({ error: validationError });
     }
 
-    const parameter = { name: req.body.name };
-    const data = await Student.create(parameter);
+    const { name, program } = req.body;
+    const parameter = { name, program };
+    const data = await studentAction.createStudent(parameter);
 
     return res.status(httpStatus.success).json({ data });
   } catch (err) {
