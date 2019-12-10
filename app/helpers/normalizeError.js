@@ -8,5 +8,11 @@ module.exports = (error) => {
     return err;
   }
 
+  if (get(error, 'constructor.name') === 'TypeError') {
+    return {
+      message: error.message,
+    };
+  }
+
   return error;
 };

@@ -1,3 +1,4 @@
+const joi = require('@hapi/joi');
 const Student = require('../db/models/student');
 const normalizeError = require('../helpers/normalizeError');
 const { httpStatus } = require('../libs/constant');
@@ -28,13 +29,15 @@ const getOneStudent = async (req, res) => {
 
 const createStudent = async (req, res) => {
   try {
-    req.checkBody('name', 'name is required').notEmpty();
+    const validator = joi.object({
+      name: joi.string().required(),
+    });
 
-    const validationError = req.validationErrors();
+    const { error } = validator.validate(req.body);
 
-    if (validationError) {
-      const error = normalizeError(validationError);
-      return res.status(httpStatus.badRequest).json({ error });
+    if (error) {
+      const validationError = normalizeError(error);
+      return res.status(httpStatus.badRequest).json({ error: validationError });
     }
 
     const parameter = { name: req.body.name };
