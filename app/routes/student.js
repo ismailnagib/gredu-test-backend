@@ -42,7 +42,7 @@ const createStudent = async (req, res) => {
     }
 
     const { name, program } = req.body;
-    const parameter = { name, program };
+    const parameter = { name, program, schedules: [] };
     const data = await studentAction.createStudent(parameter);
 
     return res.status(httpStatus.success).json({ data });
