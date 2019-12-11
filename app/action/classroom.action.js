@@ -1,7 +1,9 @@
 const Study = require('../db/models/study');
 const { maxStudentPerClassroom } = require('../libs/constraint');
 
-const checkAvailability = async ({ studentId, semester, day, classroom }) => {
+const checkAvailability = async ({
+  studentId, semester, day, classroom,
+}) => {
   try {
     const data = await Study.countDocuments({
       studentId: {

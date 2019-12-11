@@ -14,11 +14,11 @@ const getAllStudy = async (req, res) => {
   try {
     const data = await studyAction.getStudy();
 
-    return res.status(200).json({ data });
+    return res.status(httpStatus.success).json({ data });
   } catch (err) {
     const error = normalizeError(err);
 
-    return res.status(500).json({ error });
+    return res.status(httpStatus.internalServerError).json({ error });
   }
 };
 
