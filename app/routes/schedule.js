@@ -4,10 +4,9 @@ const normalizeError = require('../helpers/normalizeError');
 const { httpStatus, enumValues } = require('../libs/constant');
 const { maxClassroom, maxDay, maxCredit } = require('../libs/constraint');
 
-
 const getSchedule = async (req, res) => {
   try {
-    const data = await scheduleAction.getSchedule({ subjectId: req.params.id });
+    const data = await scheduleAction.getSchedule();
 
     return res.status(httpStatus.success).json({ data });
   } catch (err) {
