@@ -100,6 +100,36 @@ const updateStudent = async (parameter = {}, update = {}, option = {}) => {
   }
 };
 
+const getProgramDistribution = async () => {
+  try {
+    const totalCount = await Student.countDocuments();
+    const data = await Student.aggregate([
+      {
+        $group: {
+          _id: '$program',
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $addFields: {
+          percentage: {
+            $multiply: [
+              Math.round(100 / totalCount) / 100,
+              '$count',
+            ],
+          },
+        },
+      },
+    ]);
+
+    return data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   getStudent,
   getStudentById,
@@ -107,4 +137,5 @@ module.exports = {
   countStudent,
   totalCredit,
   updateStudent,
+  getProgramDistribution,
 };
