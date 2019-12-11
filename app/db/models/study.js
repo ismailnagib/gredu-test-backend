@@ -19,7 +19,7 @@ const schedule = {
 const studySchema = new mongoose.Schema({
   studentId: { type: mongoose.Schema.Types.ObjectId },
   semester,
-  schedule: [schedule],
+  schedules: [schedule],
   totalAllocatedCredit: { type: Number, min: 1, max: maxCredit },
   totalAllocatedMinute: { type: Number, min: minutePerCredit, max: maxMinute },
 }, {

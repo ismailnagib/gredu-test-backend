@@ -4,6 +4,7 @@ const get = require('lodash/get');
 const studyAction = require('../action/study.action');
 const studentAction = require('../action/student.action');
 const classroomAction = require('../action/classroom.action');
+const subjectAction = require('../action/subject.action');
 const normalizeError = require('../helpers/normalizeError');
 const { httpStatus } = require('../libs/constant');
 const {
@@ -42,14 +43,12 @@ const createStudy = async (req, res) => {
         number: joi.number().required().min(1).max(2),
         year: joi.number().required().min(0),
       }).required(),
-      schedule: joi.array().items(
-        joi.object({
-          day: joi.number().required().min(1).max(maxDay),
-          allocatedCredit: joi.number().required().min(1),
-          classroom: joi.number().required().min(1).max(maxClassroom),
-          subject: joi.string().required(),
-        }),
-      ).required().min(1),
+      schedule: joi.object({
+        day: joi.number().required().min(1).max(maxDay),
+        allocatedCredit: joi.number().required().min(1),
+        classroom: joi.number().required().min(1).max(maxClassroom),
+        subjectId: joi.string().required(),
+      }).required().min(1),
     });
 
     const { error } = validator.validate(req.body);
@@ -61,75 +60,88 @@ const createStudy = async (req, res) => {
 
     const {
       studentId,
-      semester,
-      schedule,
+      semester: { number, year },
+      schedule: {
+        subjectId, allocatedCredit, classroom, day,
+      },
     } = req.body;
 
     const student = await studentAction.getStudentById(studentId);
 
     if (isNil(student)) {
-      const studentNotFoundError = { error: { message: `Student with studentId: ${studentId} was not found` } };
-      return res.status(httpStatus.badRequest).json(studentNotFoundError);
-    }
-
-    const currentAllocation = await studyAction.getAllocatedCreditAndMinute(studentId, semester);
-    const checkClassroomAvailability = [];
-    const classroomAvailable = {
-      status: true,
-      error: null,
-    };
-
-    let totalAllocatedCredit = 0;
-    let totalAllocatedMinute = 0;
-
-    for (let i = 0, len = schedule.length; i < len; i += 1) {
-      const { allocatedCredit, classroom, day } = schedule[i];
-      const allocatedMinute = allocatedCredit * minutePerCredit;
-      schedule[i].allocatedMinute = allocatedMinute;
-      totalAllocatedCredit += allocatedCredit;
-      totalAllocatedMinute += allocatedMinute;
-      checkClassroomAvailability.push(classroomAction.checkAvailability({
-        studentId, semester, day, classroom,
-      }));
-    }
-
-    await Promise.all(checkClassroomAvailability)
-      .catch((err) => {
-        classroomAvailable.status = false;
-        classroomAvailable.error = normalizeError(err);
-      });
-
-    if (!classroomAvailable.status) {
-      return res.status(httpStatus.badRequest).json(classroomAvailable.error);
-    }
-
-    if (currentAllocation.credit + totalAllocatedCredit > maxCredit) {
       return res.status(httpStatus.badRequest).json({
-        message: `Current allocated credit (${currentAllocation.credit}) plus requested credit allocation (${totalAllocatedCredit}) is bigger than the max credit (${maxCredit})`,
+        error: normalizeError(`Student with studentId: ${studentId} was not found`),
       });
     }
 
-    if (currentAllocation.minute + totalAllocatedMinute > maxMinute) {
+    const subjectPair = await subjectAction.getSubjectPair(
+      {
+        subjectId,
+        semester: { number, year },
+        program: student.program,
+      },
+    );
+
+    if (subjectPair.length < 1) {
       return res.status(httpStatus.badRequest).json({
-        message: `Current allocated time (${currentAllocation.minute} minute) plus requested time allocation (${totalAllocatedMinute} minute) is bigger than the max weekly study time (${maxMinute} minute)`,
+        error: normalizeError("The subject doesn't exist or the student is not allowed to choose the subject"),
       });
     }
 
     const baseParameter = {
       studentId,
-      semester,
+      semester: { number, year },
     };
 
     const study = await studyAction.getStudy(baseParameter, null, { limit: 1 });
 
+    if (study.length > 0) {
+      const subjectDuplicate = study[0].schedules.find(
+        schedule => schedule.subjectId.toString() === subjectId,
+      );
+
+      if (!isNil(subjectDuplicate)) {
+        return res.status(httpStatus.badRequest).json({
+          error: normalizeError('The student has previously chosen the subject'),
+        });
+      }
+    }
+
+    const currentAllocation = await studyAction.getAllocatedCreditAndMinute(baseParameter);
+    const allocatedMinute = allocatedCredit * minutePerCredit;
+
+    await classroomAction.checkAvailability({
+      studentId, semester: { number, year }, day, classroom,
+    });
+
+    if (currentAllocation.credit + allocatedCredit > maxCredit) {
+      return res.status(httpStatus.badRequest).json({
+        error: normalizeError(`Current allocated credit (${currentAllocation.credit}) plus requested credit allocation (${allocatedCredit}) is bigger than the max credit (${maxCredit})`),
+      });
+    }
+
+    if (currentAllocation.minute + allocatedMinute > maxMinute) {
+      return res.status(httpStatus.badRequest).json({
+        error: normalizeError(`Current allocated time (${currentAllocation.minute} minute) plus requested time allocation (${allocatedMinute} minute) is bigger than the max weekly study time (${maxMinute} minute)`),
+      });
+    }
+
     let data = {};
+
+    const schedule = {
+      day,
+      allocatedCredit,
+      allocatedMinute,
+      classroom,
+      subjectId,
+    };
 
     if (study.length > 0) {
       const parameter = {
-        $push: { schedule },
+        $push: { schedules: schedule },
         $inc: {
-          totalAllocatedCredit,
-          totalAllocatedMinute,
+          totalAllocatedCredit: allocatedCredit,
+          totalAllocatedMinute: allocatedMinute,
         },
       };
 
@@ -137,9 +149,9 @@ const createStudy = async (req, res) => {
     } else {
       const parameter = {
         ...baseParameter,
-        schedule,
-        totalAllocatedCredit,
-        totalAllocatedMinute,
+        schedules: [schedule],
+        totalAllocatedCredit: allocatedCredit,
+        totalAllocatedMinute: allocatedMinute,
       };
 
       data = await studyAction.createStudy(parameter);

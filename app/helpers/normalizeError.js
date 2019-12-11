@@ -1,6 +1,12 @@
 const get = require('lodash/get');
 
 module.exports = (error) => {
+  if (typeof error === 'string') {
+    return {
+      message: error,
+    };
+  }
+
   const err = get(error, 'error.errors.stackTrace');
 
   if (err) {

@@ -37,7 +37,7 @@ const updateStudyById = async (id, parameter = {}, option = {}) => {
   }
 };
 
-const getAllocatedCreditAndMinute = async (studentId, semester) => {
+const getAllocatedCreditAndMinute = async ({ studentId, semester }) => {
   try {
     const data = await Study.aggregate([
       {

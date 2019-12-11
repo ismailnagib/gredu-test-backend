@@ -69,8 +69,8 @@ const createSubjectPair = async (req, res) => {
       return res.status(httpStatus.badRequest).json({ error: validationError });
     }
 
-    const { params: { id: subjectId }, body: { semester, program } } = req;
-    const parameter = { subjectId, semester, program };
+    const { params: { id: subjectId }, body: { semester: { number, year }, program } } = req;
+    const parameter = { subjectId, semester: { number, year }, program };
     const data = await subjectAction.createSubjectPair(parameter);
 
     return res.status(httpStatus.success).json({ data });
@@ -98,8 +98,8 @@ const deleteSubjectPair = async (req, res) => {
       return res.status(httpStatus.badRequest).json({ error: validationError });
     }
 
-    const { params: { id: subjectId }, body: { semester, program } } = req;
-    const parameter = { subjectId, semester, program };
+    const { params: { id: subjectId }, body: { semester: { number, year }, program } } = req;
+    const parameter = { subjectId, semester: { number, year }, program };
     const { deletedCount } = await subjectAction.deleteSubjectPair(parameter);
 
     return res.status(httpStatus.success).json({ data: { deletedCount } });

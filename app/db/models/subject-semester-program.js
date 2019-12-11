@@ -24,4 +24,4 @@ subjectSemesterProgramSchema.virtual('subject', {
   justOne: true,
 });
 
-module.exports = mongoose.model('SubjectSemester', subjectSemesterProgramSchema);
+module.exports = mongoose.model('SubjectSemesterProgram', subjectSemesterProgramSchema);
