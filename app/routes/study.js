@@ -84,8 +84,10 @@ const createStudy = async (req, res) => {
 
     for (let i = 0, len = schedule.length; i < len; i += 1) {
       const { allocatedCredit, classroom, day } = schedule[i];
+      const allocatedMinute = allocatedCredit * minutePerCredit;
+      schedule[i].allocatedMinute = allocatedMinute;
       totalAllocatedCredit += allocatedCredit;
-      totalAllocatedMinute += allocatedCredit * minutePerCredit;
+      totalAllocatedMinute += allocatedMinute;
       checkClassroomAvailability.push(classroomAction.checkAvailability({
         studentId, semester, day, classroom,
       }));
