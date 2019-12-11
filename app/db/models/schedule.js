@@ -28,4 +28,4 @@ schedule.virtual('subject', {
   justOne: true,
 });
 
-module.exports = mongoose.model('schedule', schedule);
+module.exports = mongoose.model('Schedule', schedule);

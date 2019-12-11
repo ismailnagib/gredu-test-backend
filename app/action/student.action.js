@@ -13,7 +13,11 @@ const getStudent = async (parameter = {}, projection = {}, option = {}) => {
 
 const getStudentById = async (id) => {
   try {
-    const data = await Student.findById(id);
+    const data = await Student.findById(id).populate({
+      path: 'schedules',
+      populate: 'subject',
+    });
+
     return data;
   } catch (err) {
     throw err;
