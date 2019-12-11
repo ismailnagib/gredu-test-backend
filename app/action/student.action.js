@@ -1,8 +1,8 @@
 const Student = require('../db/models/student');
 
-const getStudent = async (parameter = {}) => {
+const getStudent = async (parameter = {}, projection = {}, option = {}) => {
   try {
-    const data = await Student.find(parameter);
+    const data = await Student.find(parameter, projection, option);
     return data;
   } catch (err) {
     throw err;
