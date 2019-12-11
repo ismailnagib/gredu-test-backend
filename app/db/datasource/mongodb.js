@@ -16,7 +16,7 @@ module.exports = (config) => {
       j: true,
       autoIndex: false,
       useNewUrlParser: true,
-      useFindAndModify: true,
+      useFindAndModify: false,
       useUnifiedTopology: true,
     };
 
