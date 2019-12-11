@@ -13,7 +13,7 @@ const schedule = {
   allocatedCredit: { type: Number, min: 1 },
   allocatedMinute: { type: Number, min: minutePerCredit },
   classroom: { type: Number, min: 1, max: maxClassroom },
-  subject: { type: String },
+  subjectId: { type: mongoose.Schema.Types.ObjectId },
 };
 
 const studySchema = new mongoose.Schema({
@@ -32,6 +32,13 @@ const studySchema = new mongoose.Schema({
 studySchema.virtual('student', {
   ref: 'Student',
   localField: 'studentId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+studySchema.virtual('subject', {
+  ref: 'Subject',
+  localField: 'subjectId',
   foreignField: '_id',
   justOne: true,
 });
