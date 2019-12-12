@@ -53,6 +53,16 @@ Route                   | Method | Body                           | Description
 
 <br />
 
+## Running tests
+
+I've prepared some testing (it doesn't cover every endpoint / cases though). You can run it by going to your terminal, go to the project directory and type in:
+```
+npm run test
+```
+Please make sure that you've installed all the dependencies including `mocha` before running the tests.
+
+<br />
+
 ##### Supported additional environment variables:
 
 Key                       | Description
