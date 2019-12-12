@@ -1,6 +1,8 @@
 # gredu-test-backend
 Test for a job application as a fullstack developer in [Gredu](https://gredu.asia).
 
+<br />
+
 ## How to run this:
 First, you need to clone the repository then open your terminal and go to the application directory. After that, type into the terminal:
 ```
@@ -11,6 +13,8 @@ Open the `.env` file using your favorite IDE and fill in the fields:
 MONGO_DB= // Fill this with your MongoDB connection url
 ```
 
+<br />
+
 #### Without Docker
 Go back to your terminal and type in:
 ```
@@ -18,6 +22,8 @@ npm install
 npm start
 ```
 The application will be available on `http://localhost:3000`
+
+<br />
 
 #### With docker
 Go back to your terminal and type in:
@@ -27,7 +33,21 @@ docker run --env-file .env -p 3000:[your-desired-port] [image-name]
 ```
 The application will be available on `http://localhost:[your-desired-port]`
 
+<br />
+
 ## API Documentation:
+
+Route                   | Method | Body                           | Description                                            |
+------------------------|--------|--------------------------------|------------------------------------------------------- |
+/ping                   | GET    | -                              | See if the service is running                          |
+/student                | GET    | -                              | Get a list of all students' data                       |
+/student/:id            | GET    | -                              | Get a student's data                                   |
+/student/summary/:id    | GET    | -                              | Get a student's (with id that match `:id`) summary     |
+/student/distribution   | GET    | -                              | Get students' program distribution                     |
+/student                | POST   | name (string), program (string)| Create a student                                       |
+/schedule/:id           | PUT    | scheduleId (string)            | Add a schedule item to a student's (with id that match `:id`) schedules        |
+
+<br />
 
 ##### Supported additional environment variables:
 ```
