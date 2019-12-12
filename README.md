@@ -40,14 +40,16 @@ The application will be available on `http://localhost:[your-desired-port]`.
 Route                   | Method | Body                           | Description                                           
 ------------------------|--------|--------------------------------|-------------------------------------------------------
 /ping                   | GET    | -                              | See if the service is running                         
-/student                | GET    | -                              | Get a list of all students' data                      
-/student/:id            | GET    | -                              | Get a student's data                                  
-/student/summary/:id    | GET    | -                              | Get a student's (with id that match `:id`) summary    
+/student                | GET    | -                              | Get a list of all students                           
+/student/:id            | GET    | -                              | Get a student                                        
+/student/summary/:id    | GET    | -                              | Get a student's (with _id that match `:id`) summary    
 /student/distribution   | GET    | -                              | Get students' program distribution                    
 /student                | POST   | name (string), program (string)| Create a student                                      
-/schedule/:id           | PUT    | scheduleId (string)            | Add a schedule item to a student's (with id that match `:id`) schedules
-/subject                | GET    | -                              | Get a list of all subjects' data                      
+/schedule/:id           | PUT    | scheduleId (string)            | Add a schedule (with _id that match `scheduleId`) to the schedules of a student (with _id that match `:id`)
+/subject                | GET    | -                              | Get a list of all subjects                      
 /subject                | POST   | name (string)                  | Create a subject                                      
+/schedule               | GET    | -                              | Get a list of all schedules                           
+/schedule               | POST   | semester (object), semester.number (number, 1-2), semester.year (number, 0~), program (string), subjectId (string), classroom (number), day (number), credit(number)| Create a schedule (with subject with _id that match `subjectId`)
 
 <br />
 
