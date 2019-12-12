@@ -1,0 +1,11 @@
+node_modules/
+.npm
+*.env
+.vscode
+.DS_Store
+.editorconfig
+test/
+.eslintrc.js
+.gitignore
+README.md
+.git
