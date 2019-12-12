@@ -42,14 +42,14 @@ Route                   | Method | Body                           | Description
 /ping                   | GET    | -                              | See if the service is running                         
 /student                | GET    | -                              | Get a list of all students                           
 /student/:id            | GET    | -                              | Get a student                                        
-/student/summary/:id    | GET    | -                              | Get a student's (with _id that match `:id`) summary    
+/student/summary/:id    | GET    | -                              | Get the summary of a student (with _id that match `:id`)
 /student/distribution   | GET    | -                              | Get students' program distribution                    
-/student                | POST   | name (string), program (string)| Create a student                                      
+/student                | POST   | name (string), <br> program (string)| Create a student                                  
 /schedule/:id           | PUT    | scheduleId (string)            | Add a schedule (with _id that match `scheduleId`) to the schedules of a student (with _id that match `:id`)
 /subject                | GET    | -                              | Get a list of all subjects                      
 /subject                | POST   | name (string)                  | Create a subject                                      
 /schedule               | GET    | -                              | Get a list of all schedules                           
-/schedule               | POST   | semester (object), semester.number (number, 1-2), semester.year (number, 0~), program (string), subjectId (string), classroom (number), day (number), credit(number)| Create a schedule (with subject with _id that match `subjectId`)
+/schedule               | POST   | semester (object), <br> semester.number (number, 1-2), <br> semester.year (number, 0~), <br> program (string), <br> subjectId (string), <br> classroom (number), <br> day (number), <br> credit (number)| Create a schedule (with subject with _id that match `subjectId`)
 
 <br />
 
