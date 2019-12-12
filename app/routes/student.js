@@ -154,9 +154,22 @@ const programDistribution = async (req, res) => {
   }
 };
 
+const getStudentSummary = async (req, res) => {
+  try {
+    const data = await studentAction.getStudentSummary(req.params.id);
+
+    return res.status(httpStatus.success).json({ data });
+  } catch (err) {
+    const error = normalizeError(err);
+
+    return res.status(httpStatus.internalServerError).json({ error });
+  }
+};
+
 module.exports = (router) => {
   router.get('/', getAllStudent);
   router.get('/distribution', programDistribution);
+  router.get('/summary/:id', getStudentSummary);
   router.get('/:id', getOneStudent);
   router.post('/', createStudent);
   router.put('/schedule/:id', addSchedule);

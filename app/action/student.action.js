@@ -42,12 +42,12 @@ const countStudent = async (parameter = {}) => {
   }
 };
 
-const totalCredit = async (studentId, semester) => {
+const totalCredit = async (id, semester) => {
   try {
     const data = await Student.aggregate([
       {
         $match: {
-          _id: mongoose.Types.ObjectId(studentId),
+          _id: mongoose.Types.ObjectId(id),
         },
       },
       {
@@ -130,6 +130,114 @@ const getProgramDistribution = async () => {
   }
 };
 
+const getStudentSummary = async (id) => {
+  try {
+    const data = await Student.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $unwind: '$schedules',
+      },
+      {
+        $lookup: {
+          from: 'schedules',
+          localField: 'schedules',
+          foreignField: '_id',
+          as: 'schedules',
+        },
+      },
+      {
+        $unwind: '$schedules',
+      },
+      {
+        $lookup: {
+          from: 'subjects',
+          localField: 'schedules.subjectId',
+          foreignField: '_id',
+          as: 'schedules.subject',
+        },
+      },
+      {
+        $unwind: '$schedules.subject',
+      },
+      {
+        $group: {
+          _id: {
+            semester: '$schedules.semester',
+            subject: '$schedules.subject.name',
+          },
+          id: {
+            $first: '$_id',
+          },
+          name: {
+            $first: '$name',
+          },
+          program: {
+            $first: '$program',
+          },
+          totalCredit: {
+            $sum: '$schedules.credit',
+          },
+          detail: {
+            $push: {
+              classroom: '$schedules.classroom',
+              day: '$schedules.day',
+              credit: '$schedules.credit',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.semester',
+          id: {
+            $first: '$id',
+          },
+          name: {
+            $first: '$name',
+          },
+          program: {
+            $first: '$program',
+          },
+          subjects: {
+            $push: {
+              name: '$_id.subject',
+              totalCredit: {
+                $sum: '$totalCredit',
+              },
+              detail: '$detail',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$id',
+          name: {
+            $first: '$name',
+          },
+          program: {
+            $first: '$program',
+          },
+          schedules: {
+            $push: {
+              semester: '$_id',
+              subjects: '$subjects',
+            },
+          },
+        },
+      },
+    ]);
+
+    return result(data, '[0]', null);
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   getStudent,
   getStudentById,
@@ -138,4 +246,5 @@ module.exports = {
   totalCredit,
   updateStudent,
   getProgramDistribution,
+  getStudentSummary,
 };

@@ -27,6 +27,8 @@ docker run --env-file .env -p 3000:[your-desired-port] [image-name]
 ```
 The application will be available on `http://localhost:[your-desired-port]`
 
+## API Documentation:
+
 ##### Supported additional environment variables:
 ```
 PORT= // Set the port in which the application will run (default: 3000)
